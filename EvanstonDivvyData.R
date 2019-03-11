@@ -57,4 +57,4 @@ evanston_trips <- bind_rows(evanston_trips_old,evanston_trips_other,evanston_tri
 evanston_trips$duration <- difftime(evanston_trips$stoptime,evanston_trips$starttime,units="secs")
 
 #write csv file with cleaned data table
-write.csv(evanston_trips,"evanstontrips.csv")
+write.csv(evanston_trips,"evanstontrips.csv",row.names = FALSE)
