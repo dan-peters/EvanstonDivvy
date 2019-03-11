@@ -90,4 +90,10 @@ parts = c(`Subscriber` = nrow(Divvy_df %>% filter(usertype=='Subscriber') %>% fi
           `Customer` = nrow(Divvy_df %>% filter(usertype=='Customer')%>% filter(Year==2017)))
 waffle(40*parts/nrow(Divvy_df %>% filter(Year==2017)),rows = 2,colors = c("#fb8072", "#8dd3c7", "white"))
 
+#age vs. trip length in July
+ggplot(Divvy_df  %>% drop_na(),aes(x=duration,y=birthyear)) + 
+  geom_point() + scale_x_log10() + stat_smooth(method='lm') + facet_wrap(~Month)
 
+#age vs. trip length in January
+ggplot(Divvy_df  %>% drop_na() %>% filter(Month=='January'),aes(x=duration,y=birthyear)) + 
+  geom_point() + scale_x_log10() + stat_smooth(method='lm')
