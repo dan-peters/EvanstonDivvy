@@ -1,5 +1,4 @@
 library(dplyr);library(tidyverse);library(ggplot2);library(scales);library(lubridate);library(devtools);library(waffle)
-install_github("hrbrmstr/waffle")
 
 #read in csv from EvanstonDivvyData.R script output
 #exclude trips longer than 12 hours (probably errors)
@@ -90,10 +89,22 @@ parts = c(`Subscriber` = nrow(Divvy_df %>% filter(usertype=='Subscriber') %>% fi
           `Customer` = nrow(Divvy_df %>% filter(usertype=='Customer')%>% filter(Year==2017)))
 waffle(40*parts/nrow(Divvy_df %>% filter(Year==2017)),rows = 2,colors = c("#fb8072", "#8dd3c7", "white"))
 
-#age vs. trip length in July
-ggplot(Divvy_df  %>% drop_na(),aes(x=duration,y=birthyear)) + 
-  geom_point() + scale_x_log10() + stat_smooth(method='lm') + facet_wrap(~Month)
 
-#age vs. trip length in January
-ggplot(Divvy_df  %>% drop_na() %>% filter(Month=='January'),aes(x=duration,y=birthyear)) + 
-  geom_point() + scale_x_log10() + stat_smooth(method='lm')
+##AGE PLOTS
+
+#average birth year of rider by month
+Divvy_df %>% drop_na() %>% group_by(Month) %>% summarise(ageavg = 2018 - mean(birthyear)) %>% 
+  ggplot(aes(factor(Month),ageavg)) + geom_col(fill='blue')
+
+#age vs. trip length in each month
+#new plot
+Divvy_df %>% drop_na() %>% mutate(age = 2018 - birthyear) %>% 
+  ggplot(aes(x=duration,y=age)) + geom_point(size=0.5,alpha=0.9,col='black') + facet_wrap(~Month) + stat_smooth(method='lm') +
+  scale_x_log10() + theme_light()
+
+#old plot
+ggplot(Divvy_df  %>% drop_na(),aes(x=duration,y=birthyear)) + 
+  geom_point(size=0.5,alpha=0.9) + scale_x_log10() + stat_smooth(method='lm') + facet_wrap(~Month)
+
+
+  
