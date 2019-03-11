@@ -90,17 +90,21 @@ parts = c(`Subscriber` = nrow(Divvy_df %>% filter(usertype=='Subscriber') %>% fi
 waffle(40*parts/nrow(Divvy_df %>% filter(Year==2017)),rows = 2,colors = c("#fb8072", "#8dd3c7", "white"))
 
 
-##AGE PLOTS
+##AGE PLOTS - age is approximated by 2019 - birthyear
 
 #average birth year of rider by month
-Divvy_df %>% drop_na() %>% group_by(Month) %>% summarise(ageavg = 2018 - mean(birthyear)) %>% 
+Divvy_df %>% drop_na() %>% group_by(Month) %>% summarise(ageavg = 2019 - mean(birthyear)) %>% 
   ggplot(aes(factor(Month),ageavg)) + geom_col(fill='blue')
 
 #age vs. trip length in each month
 #new plot
-Divvy_df %>% drop_na() %>% mutate(age = 2018 - birthyear) %>% 
+Divvy_df %>% drop_na() %>% mutate(age = 2019 - birthyear) %>% 
   ggplot(aes(x=duration,y=age)) + geom_point(size=0.5,alpha=0.9,col='black') + facet_wrap(~Month) + stat_smooth(method='lm') +
   scale_x_log10() + theme_light()
+
+#gender vs. avg age by month
+Divvy_df %>% drop_na() %>% group_by(gender,Month) %>% summarise(ageavg = 2019 - mean(birthyear)) %>% 
+  ggplot(aes((factor(gender)),ageavg)) + geom_col(fill='blue') + facet_wrap(~Month)
 
 #old plot
 ggplot(Divvy_df  %>% drop_na(),aes(x=duration,y=birthyear)) + 
