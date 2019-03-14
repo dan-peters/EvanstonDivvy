@@ -29,9 +29,6 @@ rm(q1,q2,q3,q4,q5,q6,q7,q8,q9,q10)
 evanston_stations <- fread("curl https://s3.amazonaws.com/divvy-data/tripdata/Divvy_Trips_2017_Q3Q4.zip | tar -xf- --to-stdout *Stations*.csv") %>% 
   subset(city == 'Evanston')
 
-#save evanston stations as csv in working directory
-write.csv(evanston_stations,"evanstonstations.csv",row.names = FALSE)
-
 #select trips from larger data frames that begin or end in evanston
 evanston_trips_old <- subset(divvy_trips_oldtime, from_station_id %in% evanston_stations$id | to_station_id %in% evanston_stations$id)
 evanston_trips_new <- subset(divvy_trips_newtime, from_station_id %in% evanston_stations$id | to_station_id %in% evanston_stations$id)
@@ -58,6 +55,9 @@ evanston_trips <- bind_rows(evanston_trips_old,evanston_trips_other,evanston_tri
 
 #calculate difference to replace trip duration column
 evanston_trips$duration <- difftime(evanston_trips$stoptime,evanston_trips$starttime,units="secs")
+
+#save evanston stations as csv in working directory
+write.csv(evanston_stations,"evanstonstations.csv",row.names = FALSE)
 
 #write csv file with cleaned data table
 write.csv(evanston_trips,"evanstontrips.csv",row.names = FALSE)
