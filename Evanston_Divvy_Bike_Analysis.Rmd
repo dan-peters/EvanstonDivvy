@@ -27,7 +27,7 @@ Transportation planners have studied bike sharing and found that the benefits of
 
 This project is intended to lead to a better understanding of how the public uses Evanston Divvy infrastructure. I hope to show what gender and age demographics are using Divvy bikes, how Divvy use varies between seasons, and which trips within, to, and from Evanston are most frequently traveled on Divvys.
 
-Based on background research, I expect that there will be a greater proportion of male riders on average, and that seasonal weather changes will significantly effect the number of Divvy rides taken. I also expect to find a higher number of rides by younger users closer to Northwestern University's campus in Evanston. 
+Based on background research, I expect that there will be a greater proportion of male riders on average, and that seasonal weather changes will significantly affect the number of Divvy rides taken. I also expect to find a higher number of rides by younger users closer to Northwestern University's campus in Evanston. 
 
 # Data & Methods
 
@@ -492,7 +492,7 @@ To further explore the patterns in the previous User Type bar plot, these waffle
 Plot3.1 
 ```
 
-This last plot shows the relationship between rider age and trip duration, and how it varies during different months of the year. The center of each box shows the median trip duration, and the box gives the interquartile range (IQR) of the data. Individual outliers are shown as black dots. The graph shows that for the two youngest age groups, >20  and 20-29 years old, there is a noticeable increase in ride duration in the summer months. On the other hand, average ride length for older groups (40s-60s) becomes much more uniform over different times of the year.
+This last plot shows the relationship between rider age and trip duration, and how it varies during different months of the year. The center of each box shows the median trip duration, and the box gives the interquartile range (IQR) of the data. Individual outliers are shown as black dots. The graph shows that for the two youngest age groups, <20  and 20-29 years old, there is a noticeable increase in ride duration in the summer months. On the other hand, average ride length for older groups (40s-60s) becomes much more uniform over different times of the year.
 
 #Conclusions
 
@@ -506,9 +506,7 @@ The intriguing finding from the last graph suggests that in colder months, there
 
 ##Further Directions
 
-A future analysis should consider the question of why certain trip paths are traveled more frequency. This might be explained by ease of travel, such as bike lanes, or it could reflect population density. 
-
-Additionally, to better understand the last graph of rider age vs. trip duration, it would be helpful to perform a detailed analysis of seasonal use of Divvy's by different age groups. This analysis might help to explain the trend that the last figure identified.
+A future analysis should consider the question of why certain trip paths are traveled more frequency. This might be partially explained by ease of travel, such as bike lanes, and it would be interesting to compare the locations of bike lanes with popular Divvy routes.
 
 # References and Resources
 
