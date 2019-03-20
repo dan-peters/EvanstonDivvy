@@ -130,7 +130,7 @@ enteringevanstonplot <- mapchi +
 
 #save all plots to pdf
 
-ggsave('evanstontotalplot.pdf',evanstontotalplot,dpi=400)
-ggsave('evanstonageplot.pdf',evanstonageplot,dpi=400)
-ggsave('leavingevanstonplot.pdf',leavingevanstonplot,dpi=400)
-ggsave('enteringevanstonplot.pdf',enteringevanstonplot,dpi=400)
+ggsave('Map1.1.pdf',evanstontotalplot,dpi=400)
+ggsave('Map1.2.pdf',evanstonageplot,dpi=400)
+ggsave('Map2.1.pdf',leavingevanstonplot,dpi=400)
+ggsave('Map2.2.pdf',enteringevanstonplot,dpi=400)
