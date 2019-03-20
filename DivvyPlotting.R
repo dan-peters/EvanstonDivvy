@@ -1,8 +1,8 @@
-library(dplyr);library(tidyverse);library(ggplot2);library(scales);library(lubridate);library(devtools);library(waffle)
+library(dplyr);library(tidyverse);library(ggplot2);library(scales);library(lubridate);library(waffle);library(readr)
 
 #read in csv from EvanstonDivvyData.R script output
 #exclude trips longer than 12 hours (probably errors)
-Divvy_df <- read_csv('evanstontrips.csv') %>% filter(duration < 43200)
+Divvy_df <- read_csv('evanstontrips_plotting.csv') %>% filter(duration < 43200)
 
 #add column just for year and month name
 Divvy_df$Year <- format(Divvy_df$starttime,"%Y")
@@ -13,102 +13,59 @@ Divvy_df$MonthYear =  format(as.Date(Divvy_df$StartDate, format="%d-%m-%Y"),"%m/
 #order chronologically
 Divvy_df$Month = factor(Divvy_df$Month, levels = month.name)
 
-#line plot of number of rides per day for entire period
-ggplot(Divvy_df,aes(x=StartDate)) + geom_line(stat='count',col='purple') + scale_x_date(labels = date_format("%Y-%m"))+
-  stat_smooth(method='auto')
+#bar plot of number of total rides colored by user type - note the contrast between winter and summer non-member users
+Plot1.1 <- ggplot(Divvy_df,aes(x=Month,group=usertype,fill=usertype)) + 
+  geom_bar(stat='count',position='stack') + facet_wrap(~Year) + 
+  ggtitle('Monthly Divvy Trips by User Type') + ylab('Number of Trips') + 
+  labs(fill='User Type') + theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
-#line plot of number of female and male rides per day
-ggplot(Divvy_df %>% drop_na(),aes(x=StartDate,color=gender)) + 
-  scale_x_date(labels = date_format("%Y-%m")) + 
-  geom_line(stat='count')
+#bar plot of number of trips taken by month -  shows recent growth in ntrips over the summer.
+Plot1.2 <- ggplot(Divvy_df,aes(x=Year,group=1)) + geom_bar(stat='count',fill="blue4") + 
+  facet_wrap(~Month) + ggtitle('Number of Divvy Trips by Month, 2016-2018') + 
+  ylab('Number of Trips')
 
-#line plot of average birth year of riders
-ggplot(Divvy_df  %>% drop_na(),aes(x=StartDate,y=birthyear)) + 
-  scale_x_date(labels = date_format("%Y-%m")) + stat_summary(fun.y = mean, geom ='line',col='purple') +
-  stat_smooth(method='auto')
+#waffle plot showing proportion of trips taken by customers vs. subscribers in the month of January 2018
+parts1 = c(`Subscriber` = nrow(Divvy_df %>% 
+                                filter(usertype=='Subscriber') %>% 
+                                filter(Year==2018) %>% filter(Month=='Jan')),
+          `Customer` = nrow(Divvy_df %>%                                                                
+                              filter(usertype=='Customer') %>% 
+                              filter(Year==2018) %>% filter(Month=='Jan')))
+Plot1.3 <- waffle(49.5*parts1/nrow(Divvy_df %>% filter(Year==2017) %>% 
+                                    filter(Month=='Jan')),rows = 4,
+                  colors = c("#8dd3c7", "#fb8072", "white"),
+                  title='User Type for January 2018 Divvy Trips')
 
-#line plot of sum of length of time traveled per day 
-ggplot(Divvy_df,aes(x=StartDate,y=duration)) + scale_x_date(labels = date_format("%Y-%m")) +
-  stat_summary(fun.y = sum, geom ='line',col='purple')
+#waffle plot showing proportion of trips taken by customers vs. subscribers in the month of July 2018
+parts2 = c(`Subscriber` = nrow(Divvy_df %>% 
+                                filter(usertype=='Subscriber') %>% 
+                                filter(Year==2018) %>% filter(Month=='Jul')),
+          `Customer` = nrow(Divvy_df %>% 
+                              filter(usertype=='Customer')%>% 
+                              filter(Year==2018) %>% filter(Month=='Jul')))
+Plot1.4 <- waffle(51*parts2/nrow(Divvy_df %>% filter(Year==2017) %>% 
+                                  filter(Month=='Jul')),rows = 4,
+                  colors = c("#8dd3c7", "#fb8072", "white"),
+                  title='User Type for July 2018 Divvy Trips')
 
-#try the above plots but by month instead of day
+#Bar Plot of Monthly Count of Female and Male Riders 
+Plot2.1 <- ggplot(Divvy_df %>% drop_na(),aes(x=Month,group=gender,fill=gender)) + 
+  geom_bar(stat='count',position='stack')+ facet_wrap(~Year) + 
+  ggtitle('Monthly Divvy Trips by Gender') + ylab('Number of Trips') + 
+  labs(fill='Gender') + theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
-#bar plot of number of rides per month
-ggplot(Divvy_df,aes(x=Month,group=1)) + geom_bar(stat='count') + facet_wrap(~Year)
+#Box and whisker plot showing the average ride duration per month of different Evanston age groups
+Plot3.1 <- Divvy_df %>% drop_na() %>% mutate(age = 2019 - birthyear) %>% 
+  mutate(agegroup = findInterval(age, c(10,20,30,40,50,60))) %>% 
+  mutate(agegroup = recode_factor(agegroup,`1` = '>20 Years Old',`2` = '20s',`3`='30s',`4`='40s',`5`='50s',`6`='60s')) %>%  
+  ggplot(aes(x=Month,y=duration)) + stat_boxplot(fill="orange", alpha=0.4) + 
+  facet_wrap(~agegroup) + theme(axis.text.x = element_text(angle = 45, hjust = 1)) + 
+  scale_y_log10() + ylab('Average Ride Duration') + ggtitle('Average Ride Duration Per Month by Age Group')
 
-#bar plot of number of female and male rides per month
-ggplot(Divvy_df %>% drop_na(),aes(x=Month,group=gender,fill=gender)) + 
-  geom_bar(stat='count',position='dodge')+ facet_wrap(~Year)
-
-#bar plot of number of rides by each user type - note the contrast between winter and summer non-member users
-ggplot(Divvy_df,aes(x=Month,group=usertype,fill=usertype)) + 
-  geom_bar(stat='count',position='dodge')+ facet_wrap(~Year)
-
-#bar plot of sum of length of time traveled per month 
-ggplot(Divvy_df,aes(x=Month,y=duration,group=1)) + stat_summary(fun.y = sum, geom ='bar',fill='purple') + 
-  facet_wrap(~Year)
-
-#bar plot of avg of length of time traveled per year 
-ggplot(Divvy_df,aes(x=Year,y=duration,group=1)) + stat_summary(fun.y = mean, geom ='bar',fill='purple')
-
-#bar plot of sum of length of time traveled each month over years: shows which months growth is happening
-#growth happens may june july august september
-ggplot(Divvy_df,aes(x=Year,y=duration,group=1)) + stat_summary(fun.y = sum, geom ='bar',fill='purple') + 
-  facet_wrap(~Month)
-
-#bar plot of mean of length of time traveled each month over years: shows which months growth is happening
-#growth happens may june july august september
-ggplot(Divvy_df,aes(x=Year,y=duration,group=1)) + stat_summary(fun.y = mean, geom ='bar',fill='purple') + 
-  facet_wrap(~Month)
-
-#same as 3 above but with ntrips instead of trip duration
-ggplot(Divvy_df,aes(x=Year,group=1)) + geom_bar(stat='count') + facet_wrap(~Month)
-
-#waffle plot of 2016 proportion of customers 
-parts = c(`Subscriber` = nrow(Divvy_df %>% filter(usertype=='Subscriber') %>% filter(Year==2016)) ,
-                                `Customer` = nrow(Divvy_df %>% filter(usertype=='Customer')%>% filter(Year==2016)))
-waffle(45*parts/nrow(Divvy_df %>% filter(Year==2016)),rows = 4,colors = c("#fb8072", "#8dd3c7", "white"))
-
-#waffle plot of 2017 proportion of customers 
-parts = c(`Subscriber` = nrow(Divvy_df %>% filter(usertype=='Subscriber') %>% filter(Year==2017)) ,
-          `Customer` = nrow(Divvy_df %>% filter(usertype=='Customer')%>% filter(Year==2017)))
-waffle(45*parts/nrow(Divvy_df %>% filter(Year==2017)),rows = 4,colors = c("#fb8072", "#8dd3c7", "white"))
-
-#waffle plot of 2018 proportion of customers 
-parts = c(`Subscriber` = nrow(Divvy_df %>% filter(usertype=='Subscriber') %>% filter(Year==2018)) ,
-          `Customer` = nrow(Divvy_df %>% filter(usertype=='Customer')%>% filter(Year==2018)))
-waffle(45*parts/nrow(Divvy_df %>% filter(Year==2018)),rows = 4,colors = c("#fb8072", "#8dd3c7", "white"))
-
-#waffle plot of january 2017 proportion of customers 
-parts = c(`Subscriber` = nrow(Divvy_df %>% filter(usertype=='Subscriber') %>% filter(Year==2017) %>% filter(Month=='January')) ,
-          `Customer` = nrow(Divvy_df %>% filter(usertype=='Customer')%>% filter(Year==2017)))
-waffle(50*parts/nrow(Divvy_df %>% filter(Year==2017)),rows = 2,colors = c("#fb8072", "#8dd3c7", "white"))
-
-#waffle plot of july 2017 proportion of customers 
-parts = c(`Subscriber` = nrow(Divvy_df %>% filter(usertype=='Subscriber') %>% filter(Year==2017) %>% filter(Month=='July')) ,
-          `Customer` = nrow(Divvy_df %>% filter(usertype=='Customer')%>% filter(Year==2017)))
-waffle(40*parts/nrow(Divvy_df %>% filter(Year==2017)),rows = 2,colors = c("#fb8072", "#8dd3c7", "white"))
-
-
-##AGE PLOTS - age is approximated by 2019 - birthyear
-
-#average birth year of rider by month
-Divvy_df %>% drop_na() %>% group_by(Month) %>% summarise(ageavg = 2019 - mean(birthyear)) %>% 
-  ggplot(aes(factor(Month),ageavg)) + geom_col(fill='blue')
-
-#age vs. trip length in each month
-#new plot
-Divvy_df %>% drop_na() %>% mutate(age = 2019 - birthyear) %>% 
-  ggplot(aes(x=duration,y=age)) + geom_point(size=0.5,alpha=0.9,col='black') + facet_wrap(~Month) + stat_smooth(method='lm') +
-  scale_x_log10() + theme_light()
-
-#gender vs. avg age by month
-Divvy_df %>% drop_na() %>% group_by(gender,Month) %>% summarise(ageavg = 2019 - mean(birthyear)) %>% 
-  ggplot(aes((factor(gender)),ageavg)) + geom_col(fill='blue') + facet_wrap(~Month)
-
-#old plot
-ggplot(Divvy_df  %>% drop_na(),aes(x=duration,y=birthyear)) + 
-  geom_point(size=0.5,alpha=0.9) + scale_x_log10() + stat_smooth(method='lm') + facet_wrap(~Month)
-
-
-  
+#save plots
+ggsave('Plot1.1.pdf',Plot1.1,dpi=400,width=10,height=6)
+ggsave('Plot1.2.pdf',Plot1.2,dpi=400,width=10,height=6)
+ggsave('Plot1.3.pdf',Plot1.3,dpi=400,width=10,height=4)
+ggsave('Plot1.4.pdf',Plot1.3,dpi=400,width=10,height=4)
+ggsave('Plot2.1.pdf',Plot2.1,dpi=400,width=10,height=6)
+ggsave('Plot3.1.pdf',Plot3.1,dpi=400,width=10,height=8)
