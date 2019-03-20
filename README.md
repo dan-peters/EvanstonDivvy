@@ -8,6 +8,8 @@ Analysis of Chicago's Divvy bike share network with a focus on Evanston rides.
 3. Run DivvyPlotting.R and DivvyMapping.R to analyze and visualize the data
 
 Data Sources:
+
 (1) Mark Padgham, Richard Ellison (2017). bikedata. Journal of Open Source Software, 2(20). URL https://doi.org/10.21105/joss.00471
+
 (2) “Divvy Data.” Divvy. https://www.divvybikes.com/system-data.
 
