@@ -6,12 +6,12 @@ Divvy_df <- read_csv('evanstontrips_plotting.csv') %>% filter(duration < 43200)
 
 #add column just for year and month name
 Divvy_df$Year <- format(Divvy_df$starttime,"%Y")
-Divvy_df$Month <- months(Divvy_df$starttime)
+Divvy_df$Month <- format(Divvy_df$starttime,"%b")
 Divvy_df$StartDate = as.Date(Divvy_df$starttime, "%m/%d/%Y")
 Divvy_df$MonthYear =  format(as.Date(Divvy_df$StartDate, format="%d-%m-%Y"),"%m/%Y")
 
 #order chronologically
-Divvy_df$Month = factor(Divvy_df$Month, levels = month.name)
+Divvy_df$Month = factor(Divvy_df$Month, levels = month.abb)
 
 #bar plot of number of total rides colored by user type - note the contrast between winter and summer non-member users
 Plot1.1 <- ggplot(Divvy_df,aes(x=Month,group=usertype,fill=usertype)) + 
@@ -52,7 +52,8 @@ Plot1.4 <- waffle(51*parts2/nrow(Divvy_df %>% filter(Year==2017) %>%
 Plot2.1 <- ggplot(Divvy_df %>% drop_na(),aes(x=Month,group=gender,fill=gender)) + 
   geom_bar(stat='count',position='stack')+ facet_wrap(~Year) + 
   ggtitle('Monthly Divvy Trips by Gender') + ylab('Number of Trips') + 
-  labs(fill='Gender') + theme(axis.text.x = element_text(angle = 45, hjust = 1))
+  labs(fill='Gender') + theme(text = element_text(size=20,family="georgia"),
+                              axis.text.x = element_text(angle = 45, hjust = 1))
 
 #Box and whisker plot showing the average ride duration per month of different Evanston age groups
 Plot3.1 <- Divvy_df %>% drop_na() %>% mutate(age = 2019 - birthyear) %>% 
@@ -65,7 +66,7 @@ Plot3.1 <- Divvy_df %>% drop_na() %>% mutate(age = 2019 - birthyear) %>%
 #save plots
 ggsave('Plot1.1.pdf',Plot1.1,dpi=400,width=10,height=6)
 ggsave('Plot1.2.pdf',Plot1.2,dpi=400,width=10,height=6)
-ggsave('Plot1.3.pdf',Plot1.3,dpi=400,width=10,height=4)
-ggsave('Plot1.4.pdf',Plot1.3,dpi=400,width=10,height=4)
-ggsave('Plot2.1.pdf',Plot2.1,dpi=400,width=10,height=6)
+ggsave('Plot1.3.pdf',Plot1.3,dpi=400,width=6,height=4)
+ggsave('Plot1.4.pdf',Plot1.3,dpi=400,width=6,height=4)
+ggsave('Plot2.1.pdf',Plot2.1,dpi=400,width=12,height=6)
 ggsave('Plot3.1.pdf',Plot3.1,dpi=400,width=10,height=8)
