@@ -58,7 +58,7 @@ Plot2.1 <- ggplot(Divvy_df %>% drop_na(),aes(x=Month,group=gender,fill=gender)) 
 #Box and whisker plot showing the average ride duration per month of different Evanston age groups
 Plot3.1 <- Divvy_df %>% drop_na() %>% mutate(age = 2019 - birthyear) %>% 
   mutate(agegroup = findInterval(age, c(10,20,30,40,50,60))) %>% 
-  mutate(agegroup = recode_factor(agegroup,`1` = '>20 Years Old',`2` = '20s',`3`='30s',`4`='40s',`5`='50s',`6`='60s')) %>%  
+  mutate(agegroup = recode_factor(agegroup,`1` = '<20 Years Old',`2` = '20s',`3`='30s',`4`='40s',`5`='50s',`6`='60s')) %>%  
   ggplot(aes(x=Month,y=duration)) + stat_boxplot(fill="orange", alpha=0.7) + 
   facet_wrap(~agegroup) + theme(text = element_text(size=18),
                                 axis.text.x = element_text(angle = 45, hjust = 1),
